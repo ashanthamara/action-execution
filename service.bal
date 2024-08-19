@@ -23,6 +23,35 @@ type ActionResponse record {
 };
 
 service / on new http:Listener(8090) {
+    resource function post preIssueAccessTokenUpdateScopes(http:Request req) returns http:Response|error? {
+        
+        log:printInfo("Request Received to Update Scopes of the access token");
+        ActionResponse respBody = {
+            "actionStatus": "SUCCESS",
+            "operations": [
+                {
+                    "op": "add",
+                    "path": "/accessToken/scopes/-",
+                    "value": "custom-scope-1"
+                },
+                {
+                    "op": "remove",
+                    "path": "/accessToken/scopes/0"
+                },
+                {
+                    "op": "replace",
+                    "path": "/accessToken/scopes/2",
+                    "value": "groups"
+                }
+            ]
+        };
+        http:Response resp = new;
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;
+    }
+
     resource function post preIssueAccessTokenAddAud(http:Request req) returns http:Response|error? {
         
         log:printInfo("Request Received");

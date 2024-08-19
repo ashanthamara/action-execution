@@ -36,6 +36,10 @@ service / on new http:Listener(8090) {
                 }
             ]
         };
+        http:Response resp = new;
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody);
+        
         return resp;
     }
 
@@ -55,6 +59,10 @@ service / on new http:Listener(8090) {
                 }
             ]
         };  
+        http:Response resp = new;
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody);
+
         return resp;
     }   
 }

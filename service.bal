@@ -1,5 +1,6 @@
 import ballerina/http;
 import ballerina/log;
+import ballerina/json;
 
 enum ActionStatus {
     SUCCESS,
@@ -23,7 +24,7 @@ type ActionResponse record {
 };
 
 service / on new http:Listener(8090) {
-    resource function post preIssueAccessTokenAddAud(http:Request req) returns ActionResponse|error? {
+    resource function post preIssueAccessTokenAddAud(http:Request req) returns http:Response|error? {
         
         log:printInfo("Request Received");
         ActionResponse respBody = {
@@ -38,12 +39,12 @@ service / on new http:Listener(8090) {
         };
         http:Response resp = new;
         resp.statusCode = 200;
-        resp.setJsonPayload(respBody);
+        resp.setJsonPayload(respBody.toJson());
 
         return resp;
     }
 
-    resource function post preIssueAccessTokenAddCustomClaim(http:Request req) returns ActionResponse|error? {
+    resource function post preIssueAccessTokenAddCustomClaim(http:Request req) returns http:Response|error? {
         
         log:printInfo("Request Received");
         ActionResponse respBody = {
@@ -61,7 +62,7 @@ service / on new http:Listener(8090) {
         };  
         http:Response resp = new;
         resp.statusCode = 200;
-        resp.setJsonPayload(respBody);
+        resp.setJsonPayload(respBody.toJson());
 
         return resp;
     }   

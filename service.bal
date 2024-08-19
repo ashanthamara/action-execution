@@ -23,19 +23,38 @@ type ActionResponse record {
 };
 
 service / on new http:Listener(8090) {
-resource function post preIssueAccessTokenAddAud(http:Request req) returns ActionResponse|error? {
-     
-     log:printInfo("Request Received");
-     ActionResponse resp = {
-        "actionStatus": "SUCCESS",
-        "operations": [
-            {
-            "op": "add",
-            "path": "/accessToken/claims/aud/-",
-            "value": "https://example.com/resource"
-            }
-        ]
-    };
-     return resp;
-}
+    resource function post preIssueAccessTokenAddAud(http:Request req) returns ActionResponse|error? {
+        
+        log:printInfo("Request Received");
+        ActionResponse resp = {
+            "actionStatus": "SUCCESS",
+            "operations": [
+                {
+                "op": "add",
+                "path": "/accessToken/claims/aud/-",
+                "value": "https://example.com/resource"
+                }
+            ]
+        };
+        return resp;
+    }
+
+    resource function post preIssueAccessTokenAddCustomClaim(http:Request req) returns ActionResponse|error? {
+        
+        log:printInfo("Request Received");
+        ActionResponse resp = {
+            "actionStatus": "SUCCESS",
+            "operations": [
+                {
+                    "op": "add",
+                    "path": "/accessToken/claims/-",
+                    "value": {
+                        "name": "customSID",
+                        "value": "12345"
+                    }
+                }
+            ]
+        };  
+        return resp;
+    }   
 }

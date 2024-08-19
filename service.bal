@@ -1,6 +1,5 @@
 import ballerina/http;
 import ballerina/log;
-import ballerina/json;
 
 enum ActionStatus {
     SUCCESS,

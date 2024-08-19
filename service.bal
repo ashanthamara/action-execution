@@ -26,7 +26,7 @@ service / on new http:Listener(8090) {
     resource function post preIssueAccessTokenAddAud(http:Request req) returns ActionResponse|error? {
         
         log:printInfo("Request Received");
-        ActionResponse resp = {
+        ActionResponse respBody = {
             "actionStatus": "SUCCESS",
             "operations": [
                 {
@@ -39,14 +39,14 @@ service / on new http:Listener(8090) {
         http:Response resp = new;
         resp.statusCode = 200;
         resp.setJsonPayload(respBody);
-        
+
         return resp;
     }
 
     resource function post preIssueAccessTokenAddCustomClaim(http:Request req) returns ActionResponse|error? {
         
         log:printInfo("Request Received");
-        ActionResponse resp = {
+        ActionResponse respBody = {
             "actionStatus": "SUCCESS",
             "operations": [
                 {

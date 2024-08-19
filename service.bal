@@ -52,16 +52,25 @@ service / on new http:Listener(8090) {
         return resp;
     }
 
-    resource function post preIssueAccessTokenAddAud(http:Request req) returns http:Response|error? {
+    resource function post preIssueAccessTokenUpdateAudience(http:Request req) returns http:Response|error? {
         
-        log:printInfo("Request Received");
+        log:printInfo("Request Received to Update Audience of the access token");
         ActionResponse respBody = {
             "actionStatus": "SUCCESS",
             "operations": [
                 {
-                "op": "add",
-                "path": "/accessToken/claims/aud/-",
-                "value": "https://example.com/resource"
+                    "op": "add",
+                    "path": "/accessToken/claims/aud/-",
+                    "value": "https://myextension.com"
+                },
+                {
+                    "op": "remove",
+                    "path": "/accessToken/claims/aud/1"
+                },
+                {
+                    "op": "replace",
+                    "path": "/accessToken/claims/aud/0",
+                    "value": "https://localhost:8090"
                 }
             ]
         };

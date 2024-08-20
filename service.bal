@@ -130,9 +130,9 @@ service / on new http:Listener(8090) {
         return resp;
     }
 
-    resource function post preIssueAccessTokenAddCustomClaim(http:Request req) returns http:Response|error? {
+    resource function post preIssueAccessTokenAddCustomClaims(http:Request req) returns http:Response|error? {
         
-        log:printInfo("Request Received");
+        log:printInfo("Request Received to Add Custom Claims to the access token");
         ActionResponse respBody = {
             "actionStatus": "SUCCESS",
             "operations": [
@@ -140,16 +140,50 @@ service / on new http:Listener(8090) {
                     "op": "add",
                     "path": "/accessToken/claims/-",
                     "value": {
-                        "name": "customSID",
-                        "value": "12345"
+                        "name": "companyID",
+                        "value": "LK-2292"
+                    }
+                },
+                {
+                    "op": "add",
+                    "path": "/accessToken/claims/-",
+                    "value": {
+                        "name": "isPermanent",
+                        "value": true
+                    }
+                },
+                {
+                    "op": "add",
+                    "path": "/accessToken/claims/-",
+                    "value": {
+                        "name": "additionalRoles",
+                        "value": [
+                            "manager",
+                            "accountant"
+                        ]
                     }
                 }
             ]
-        };  
+        };
         http:Response resp = new;
         resp.statusCode = 200;
         resp.setJsonPayload(respBody.toJson());
 
         return resp;
     }   
+
+    resource function post preIssueAccessTokenError(http:Request req) returns http:Response|error? {
+        
+        log:printInfo("Request Received to simulate an error");
+        ActionResponse respBody = {
+            "actionStatus": "ERROR",
+            "error": "access_denied",
+            "error_description": "The user is not authorized to access the resource"
+        };
+        http:Response resp = new;
+        resp.statusCode = 400;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;
+    }
 }

@@ -110,6 +110,26 @@ service / on new http:Listener(8090) {
         return resp;
     }
 
+    resource function post preIssueAccessTokenUpdateTokenExpiryTime(http:Request req) returns http:Response|error? {
+        
+        log:printInfo("Request Received to Update OIDC Claims of the access token");
+        ActionResponse respBody = {
+            "actionStatus": "SUCCESS",
+            "operations": [
+                {
+                    "op": "replace",
+                    "path": "/accessToken/claims/expires_in",
+                    "value": "4000"
+                }
+            ]
+        };
+        http:Response resp = new;
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;
+    }
+
     resource function post preIssueAccessTokenAddCustomClaim(http:Request req) returns http:Response|error? {
         
         log:printInfo("Request Received");

@@ -81,6 +81,35 @@ service / on new http:Listener(8090) {
         return resp;
     }
 
+    resource function post preIssueAccessTokenUpdateOidcClaims(http:Request req) returns http:Response|error? {
+        
+        log:printInfo("Request Received to Update OIDC Claims of the access token");
+        ActionResponse respBody = {
+            "actionStatus": "SUCCESS",
+            "operations": [
+                {
+                    "op": "remove",
+                    "path": "/accessToken/claims/groups/0"
+                },
+                {
+                    "op": "replace",
+                    "path": "/accessToken/claims/groups/1",
+                    "value": "verifiedGroup1"
+                },
+                {
+                    "op": "replace",
+                    "path": "/accessToken/claims/phone_number",
+                    "value": "+94717525365"
+                }
+            ]
+        };
+        http:Response resp = new;
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;
+    }
+
     resource function post preIssueAccessTokenAddCustomClaim(http:Request req) returns http:Response|error? {
         
         log:printInfo("Request Received");

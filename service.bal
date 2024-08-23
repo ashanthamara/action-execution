@@ -47,7 +47,12 @@ service / on new http:Listener(8090) {
                 {
                     op: ADD,
                     path: "/accessToken/scopes/-",
-                    value: "custom-scope-1"
+                    value: "test_api_perm_3"
+                },
+                {
+                    op: ADD,
+                    path: "/accessToken/scopes/0",
+                    value: "test_api_perm_2"
                 },
                 {
                     op: REMOVE,
@@ -55,8 +60,8 @@ service / on new http:Listener(8090) {
                 },
                 {
                     op: REPLACE,
-                    path: "/accessToken/scopes/2",
-                    value: "groups"
+                    path: "/accessToken/scopes/1",
+                    value: "test_api_perm_1"
                 }
             ]
         };

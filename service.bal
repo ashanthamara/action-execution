@@ -43,55 +43,49 @@ service / on new http:Listener(8090) {
         ActionSuccessResponse respBody;
         http:Response resp = new;
         log:printInfo("Request Received to Update Scopes of the access token");
-        json|http:ClientError requestPayload = req.getJsonPayload();
-        if (requestPayload is json) {
-            json grantType = check requestPayload.toJson().event.request.grantType;
-            if (grantType.toString() == "refresh_token") {
-                log:printInfo("Grant Type is refresh_token");
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: REMOVE,
-                            path: "/accessToken/scopes/0"
-                        }
-                    ]
-                };
-            } else {
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: ADD,
-                            path: "/accessToken/scopes/-",
-                            value: "test_api_perm_3"
-                        },
-                        {
-                            op: ADD,
-                            path: "/accessToken/scopes/0",
-                            value: "test_api_perm_2"
-                        },
-                        {
-                            op: REMOVE,
-                            path: "/accessToken/scopes/0"
-                        },
-                        {
-                            op: REPLACE,
-                            path: "/accessToken/scopes/1",
-                            value: "test_api_perm_1"
-                        }
-                    ]
-                };
-            }
-            resp.statusCode = 200;
-            resp.setJsonPayload(respBody.toJson());
-
-            return resp;
+        json requestPayload = <json> check req.getJsonPayload();
+        json grantType = check requestPayload.toJson().event.request.grantType;
+        if (grantType == "refresh_token") {
+            log:printInfo("Grant Type is refresh_token");
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: REMOVE,
+                        path: "/accessToken/scopes/0"
+                    }
+                ]
+            };
         } else {
-            log:printInfo("Request payload is not a json string");
-            resp.statusCode = 400;
-            return resp;
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: ADD,
+                        path: "/accessToken/scopes/-",
+                        value: "test_api_perm_3"
+                    },
+                    {
+                        op: ADD,
+                        path: "/accessToken/scopes/0",
+                        value: "test_api_perm_2"
+                    },
+                    {
+                        op: REMOVE,
+                        path: "/accessToken/scopes/0"
+                    },
+                    {
+                        op: REPLACE,
+                        path: "/accessToken/scopes/1",
+                        value: "test_api_perm_1"
+                    }
+                ]
+            };
         }
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;
     }
 
     resource function post preIssueAccessTokenUpdateAudience(http:Request req) returns http:Response|error? {
@@ -99,50 +93,44 @@ service / on new http:Listener(8090) {
         ActionSuccessResponse respBody;
         http:Response resp = new;
         log:printInfo("Request Received to Update Audience of the access token");
-        json|http:ClientError requestPayload = req.getJsonPayload();
-        if (requestPayload is json) {
-            json grantType = check requestPayload.toJson().event.request.grantType;
-            if (grantType.toString() == "refresh_token") {
-                log:printInfo("Grant Type is refresh_token");
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: REMOVE,
-                            path: "/accessToken/claims/aud/0"
-                        }
-                    ]
-                };
-            } else {
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: ADD,
-                            path: "/accessToken/claims/aud/-",
-                            value: "https://myextension.com"
-                        },
-                        {
-                            op: REMOVE,
-                            path: "/accessToken/claims/aud/1"
-                        },
-                        {
-                            op: REPLACE,
-                            path: "/accessToken/claims/aud/0",
-                            value: "https://localhost:8090"
-                        }
-                    ]
-                };
-            }
-            resp.statusCode = 200;
-            resp.setJsonPayload(respBody.toJson());
-
-            return resp;
+        json requestPayload = <json> check req.getJsonPayload();
+        json grantType = check requestPayload.toJson().event.request.grantType;
+        if (grantType == "refresh_token") {
+            log:printInfo("Grant Type is refresh_token");
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: REMOVE,
+                        path: "/accessToken/claims/aud/0"
+                    }
+                ]
+            };
         } else {
-            log:printInfo("Request payload is not a json string");
-            resp.statusCode = 400;
-            return resp;
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: ADD,
+                        path: "/accessToken/claims/aud/-",
+                        value: "https://myextension.com"
+                    },
+                    {
+                        op: REMOVE,
+                        path: "/accessToken/claims/aud/1"
+                    },
+                    {
+                        op: REPLACE,
+                        path: "/accessToken/claims/aud/0",
+                        value: "https://localhost:8090"
+                    }
+                ]
+            };
         }
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;
     }
 
     resource function post preIssueAccessTokenUpdateOidcClaims(http:Request req) returns http:Response|error? {
@@ -150,50 +138,44 @@ service / on new http:Listener(8090) {
         ActionSuccessResponse respBody;
         http:Response resp = new;
         log:printInfo("Request Received to Update OIDC Claims of the access token");
-        json|http:ClientError requestPayload = req.getJsonPayload();
-        if (requestPayload is json) {
-            json grantType = check requestPayload.toJson().event.request.grantType;
-            if (grantType.toString() == "refresh_token") {
-                log:printInfo("Grant Type is refresh_token");
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: REMOVE,
-                            path: "/accessToken/claims/groups/0"
-                        }
-                    ]
-                };
-            } else {
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: REMOVE,
-                            path: "/accessToken/claims/groups/0"
-                        },
-                        {
-                            op: REPLACE,
-                            path: "/accessToken/claims/groups/1",
-                            value: "verifiedGroup1"
-                        },
-                        {
-                            op: REPLACE,
-                            path: "/accessToken/claims/username",
-                            value: "US/JohnDoe"
-                        }
-                    ]
-                };
-            }
-            resp.statusCode = 200;
-            resp.setJsonPayload(respBody.toJson());
-
-            return resp;
+        json requestPayload = <json> check req.getJsonPayload();
+        json grantType = check requestPayload.toJson().event.request.grantType;
+        if (grantType == "refresh_token") {
+            log:printInfo("Grant Type is refresh_token");
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: REMOVE,
+                        path: "/accessToken/claims/groups/0"
+                    }
+                ]
+            };
         } else {
-            log:printInfo("Request payload is not a json string");
-            resp.statusCode = 400;
-            return resp;
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: REMOVE,
+                        path: "/accessToken/claims/groups/0"
+                    },
+                    {
+                        op: REPLACE,
+                        path: "/accessToken/claims/groups/1",
+                        value: "verifiedGroup1"
+                    },
+                    {
+                        op: REPLACE,
+                        path: "/accessToken/claims/username",
+                        value: "US/JohnDoe"
+                    }
+                ]
+            };
         }
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;
     }
 
     resource function post preIssueAccessTokenUpdateTokenExpiryTime(http:Request req) returns http:Response|error? {
@@ -201,42 +183,36 @@ service / on new http:Listener(8090) {
         ActionSuccessResponse respBody;
         http:Response resp = new;
         log:printInfo("Request Received to Update OIDC Claims of the access token");
-        json|http:ClientError requestPayload = req.getJsonPayload();
-        if (requestPayload is json) {
-            json grantType = check requestPayload.toJson().event.request.grantType;
-            if (grantType.toString() == "refresh_token") {
-                log:printInfo("Grant Type is refresh_token");
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: REPLACE,
-                            path: "/accessToken/claims/expires_in",
-                            value: "3000"
-                        }
-                    ]
-                };
-            } else {
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: REPLACE,
-                            path: "/accessToken/claims/expires_in",
-                            value: "4000"
-                        }
-                    ]
-                };
-            }
-            resp.statusCode = 200;
-            resp.setJsonPayload(respBody.toJson());
-
-            return resp;
+        json requestPayload = <json> check req.getJsonPayload();
+        json grantType = check requestPayload.toJson().event.request.grantType;
+        if (grantType == "refresh_token") {
+            log:printInfo("Grant Type is refresh_token");
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: REPLACE,
+                        path: "/accessToken/claims/expires_in",
+                        value: "3000"
+                    }
+                ]
+            };
         } else {
-            log:printInfo("Request payload is not a json string");
-            resp.statusCode = 400;
-            return resp;
-        }        
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: REPLACE,
+                        path: "/accessToken/claims/expires_in",
+                        value: "4000"
+                    }
+                ]
+            };
+        }
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;   
     }
 
     resource function post preIssueAccessTokenAddCustomClaims(http:Request req) returns http:Response|error? {
@@ -244,67 +220,61 @@ service / on new http:Listener(8090) {
         ActionSuccessResponse respBody;
         http:Response resp = new;
         log:printInfo("Request Received to Add Custom Claims to the access token");
-        json|http:ClientError requestPayload = req.getJsonPayload();
-        if (requestPayload is json) {
-            json grantType = check requestPayload.toJson().event.request.grantType;
-            if (grantType.toString() == "refresh_token") {
-                log:printInfo("Grant Type is refresh_token");
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: ADD,
-                            path: "/accessToken/claims/-",
-                            value: {
-                                name: "grantType",
-                                value: grantType.toString()
-                            }
+        json requestPayload = <json> check req.getJsonPayload();
+        json grantType = check requestPayload.toJson().event.request.grantType;
+        if (grantType == "refresh_token") {
+            log:printInfo("Grant Type is refresh_token");
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: ADD,
+                        path: "/accessToken/claims/-",
+                        value: {
+                            name: "grantType",
+                            value: grantType.toString()
                         }
-                    ]
-                };
-            } else {
-                respBody = {
-                    "actionStatus": SUCCESS,
-                    "operations": [
-                        {
-                            op: ADD,
-                            path: "/accessToken/claims/-",
-                            value: {
-                                name: "grantType",
-                                value: grantType.toString()
-                            }
-                        },
-                        {
-                            op: ADD,
-                            path: "/accessToken/claims/-",
-                            value: {
-                                name: "isPermanent",
-                                value: true
-                            }
-                        },
-                        {
-                            op: ADD,
-                            path: "/accessToken/claims/-",
-                            value: {
-                                name: "additionalRoles",
-                                value: [
-                                    "accountant",
-                                    "manager"
-                                ]
-                            }
-                        }
-                    ]
-                };
-            }
-            resp.statusCode = 200;
-            resp.setJsonPayload(respBody.toJson());
-
-            return resp;
+                    }
+                ]
+            };
         } else {
-            log:printInfo("Request payload is not a json string");
-            resp.statusCode = 400;
-            return resp;
-        }    
+            respBody = {
+                "actionStatus": SUCCESS,
+                "operations": [
+                    {
+                        op: ADD,
+                        path: "/accessToken/claims/-",
+                        value: {
+                            name: "grantType",
+                            value: grantType.toString()
+                        }
+                    },
+                    {
+                        op: ADD,
+                        path: "/accessToken/claims/-",
+                        value: {
+                            name: "isPermanent",
+                            value: true
+                        }
+                    },
+                    {
+                        op: ADD,
+                        path: "/accessToken/claims/-",
+                        value: {
+                            name: "additionalRoles",
+                            value: [
+                                "accountant",
+                                "manager"
+                            ]
+                        }
+                    }
+                ]
+            };
+        }
+        resp.statusCode = 200;
+        resp.setJsonPayload(respBody.toJson());
+
+        return resp;   
     }   
 
     resource function post preIssueAccessTokenError(http:Request req) returns http:Response|error? {

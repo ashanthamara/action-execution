@@ -221,6 +221,7 @@ service / on new http:Listener(8090) {
         http:Response resp = new;
         log:printInfo("Request Received to Add Custom Claims to the access token");
         json requestPayload = <json> check req.getJsonPayload();
+        log:printInfo(requestPayload.toString());
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
             log:printInfo("Grant Type is refresh_token");

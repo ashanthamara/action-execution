@@ -46,7 +46,6 @@ service / on new http:Listener(8090) {
         json requestPayload = <json> check req.getJsonPayload();
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
-            log:printInfo("Grant Type is refresh_token");
             respBody = {
                 "actionStatus": SUCCESS,
                 "operations": [
@@ -95,8 +94,7 @@ service / on new http:Listener(8090) {
         log:printInfo("Request Received to Update Audience of the access token");
         json requestPayload = <json> check req.getJsonPayload();
         json grantType = check requestPayload.toJson().event.request.grantType;
-        if (grantType == "refresh_token") {
-            log:printInfo("Grant Type is refresh_token");
+        if (grantType == "refresh_token") { 
             respBody = {
                 "actionStatus": SUCCESS,
                 "operations": [
@@ -141,7 +139,6 @@ service / on new http:Listener(8090) {
         json requestPayload = <json> check req.getJsonPayload();
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
-            log:printInfo("Grant Type is refresh_token");
             respBody = {
                 "actionStatus": SUCCESS,
                 "operations": [
@@ -186,7 +183,6 @@ service / on new http:Listener(8090) {
         json requestPayload = <json> check req.getJsonPayload();
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
-            log:printInfo("Grant Type is refresh_token");
             respBody = {
                 "actionStatus": SUCCESS,
                 "operations": [
@@ -224,20 +220,41 @@ service / on new http:Listener(8090) {
         log:printInfo(requestPayload.toString());
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
-            log:printInfo("Grant Type is refresh_token");
-            respBody = {
-                "actionStatus": SUCCESS,
-                "operations": [
-                    {
-                        op: ADD,
-                        path: "/accessToken/claims/-",
-                        value: {
-                            name: "grantType",
+            string? prevGrantType = check getAccessTokenClaim(requestPayload, "grantType");
+            if prevGrantType != null {
+                respBody = {
+                    "actionStatus": SUCCESS,
+                    "operations": [
+                        {
+                            op: REPLACE,
+                            path: "/accessToken/claims/grantType",
                             value: grantType.toString()
+                        },
+                        {
+                            op: ADD,
+                            path: "/accessToken/claims/-",
+                            value: {
+                                name: "previousGrantType",
+                                value: prevGrantType
+                            }
                         }
-                    }
-                ]
-            };
+                    ]
+                };
+            } else {
+                respBody = {
+                    "actionStatus": SUCCESS,
+                    "operations": [
+                        {
+                            op: ADD,
+                            path: "/accessToken/claims/-",
+                            value: {
+                                name: "grantType",
+                                value: grantType.toString()
+                            }
+                        }
+                    ]
+                };
+            }
         } else {
             respBody = {
                 "actionStatus": SUCCESS,
@@ -292,4 +309,18 @@ service / on new http:Listener(8090) {
 
         return resp;
     }
+}
+
+// Function to get the email value from the claims
+function getAccessTokenClaim(json requestPayload, string claimName) returns string|error? {
+    json? claimsJson = check requestPayload.toJson().event.accessToken.claims;
+
+    if claimsJson is json[] {
+        foreach json claim in claimsJson {
+            if claim.name == claimName {
+                return (check claim.value).toString();
+            }
+        }
+    }
+    return null;
 }

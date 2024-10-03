@@ -44,6 +44,7 @@ service / on new http:Listener(8090) {
         http:Response resp = new;
         log:printInfo("Request Received to Update Scopes of the access token");
         json requestPayload = <json> check req.getJsonPayload();
+        log:printInfo(requestPayload.toString());
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
             respBody = {
@@ -93,6 +94,7 @@ service / on new http:Listener(8090) {
         http:Response resp = new;
         log:printInfo("Request Received to Update Audience of the access token");
         json requestPayload = <json> check req.getJsonPayload();
+        log:printInfo(requestPayload.toString());
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") { 
             respBody = {
@@ -137,6 +139,7 @@ service / on new http:Listener(8090) {
         http:Response resp = new;
         log:printInfo("Request Received to Update OIDC Claims of the access token");
         json requestPayload = <json> check req.getJsonPayload();
+        log:printInfo(requestPayload.toString());
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
             respBody = {
@@ -179,8 +182,9 @@ service / on new http:Listener(8090) {
         
         ActionSuccessResponse respBody;
         http:Response resp = new;
-        log:printInfo("Request Received to Update OIDC Claims of the access token");
+        log:printInfo("Request Received to Update Expiry Time of the access token");
         json requestPayload = <json> check req.getJsonPayload();
+        log:printInfo(requestPayload.toString());
         json grantType = check requestPayload.toJson().event.request.grantType;
         if (grantType == "refresh_token") {
             respBody = {

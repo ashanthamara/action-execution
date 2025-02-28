@@ -7,6 +7,11 @@ import ballerina/log;
 listener http:Listener ep0 = new (9090);
 
 service / on ep0 {
+
+    public function init() {
+        log:printInfo("Pre Issue Access Token Action E2E Service started.");
+    }
+
     # handle pre-issue access token events
     #
     # + payload - parameter description 
@@ -60,6 +65,7 @@ service / on ep0 {
         OkInline_response_200 resp = {
             "body": respBody
         };
+        log:printInfo("SUCCESS Response: " + resp.toString());
         return resp;
     }
 
@@ -104,6 +110,7 @@ service / on ep0 {
         OkInline_response_200 resp = {
             "body": respBody
         };
+        log:printInfo("SUCCESS Response: " + resp.toString());
         return resp;
     }
 
@@ -148,6 +155,7 @@ service / on ep0 {
         OkInline_response_200 resp = {
             "body": respBody
         };
+        log:printInfo("SUCCESS Response: " + resp.toString());
         return resp;
     }
 
@@ -184,6 +192,7 @@ service / on ep0 {
         OkInline_response_200 resp = {
             "body": respBody
         };
+        log:printInfo("SUCCESS Response: " + resp.toString());
         return resp;
     }
 
@@ -267,6 +276,7 @@ service / on ep0 {
         OkInline_response_200 resp = {
             "body": respBody
         };
+        log:printInfo("SUCCESS Response: " + resp.toString());
         return resp;   
     }   
 
@@ -281,6 +291,7 @@ service / on ep0 {
                 errorDescription: "Please try again"
             }
         };
+        log:printInfo("ERROR Response: " + resp.toString());
         return resp; 
     }
 }

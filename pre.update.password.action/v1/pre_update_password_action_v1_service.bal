@@ -9,7 +9,7 @@ listener http:Listener ep0 = new (9091);
 service / on ep0 {
 
     public function init() {
-        log:printInfo("Service started on port 9091");
+        log:printInfo("Pre Update Password Action E2E Service started.");
     }
 
     # handle pre-update password events

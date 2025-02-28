@@ -4,7 +4,7 @@
 import ballerina/http;
 import ballerina/log;
 
-listener http:Listener ep0 = new (9090, config = {host: "localhost"});
+listener http:Listener ep0 = new (9090);
 
 service / on ep0 {
     # handle pre-issue access token events

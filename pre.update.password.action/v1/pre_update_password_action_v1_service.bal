@@ -22,7 +22,7 @@ service / on ep0 {
     resource function post preUpdatePassword(@http:Payload RequestBody payload) returns OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse {
         
         Event event = payload.event;
-        log:printInfo("Pre Update Password Action request received: " + RequestBody.toString());
+        log:printInfo("Pre Update Password Action request received: " + payload.toString());
 
         if (event.user.updatingCredential is UnencryptedCredential) {
             UnencryptedCredential unencryptedCredential = <UnencryptedCredential>event.user.updatingCredential;

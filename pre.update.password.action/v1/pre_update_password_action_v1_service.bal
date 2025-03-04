@@ -15,58 +15,103 @@ service / on ep0 {
     # handle pre-update password events
     #
     # + payload - parameter description 
+    # + apiVersion - API version header
+    # + authorization - Authorization header
     # + return - returns can be any of following types
     # OkInline_response_200 (Ok)
     # BadRequestErrorResponse (Bad Request)
     # InternalServerErrorErrorResponse (Server Error)
-    resource function post preUpdatePassword(@http:Payload RequestBody payload) returns OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse {
-        
-        Event event = payload.event;
-        log:printInfo("Pre Update Password Action request received: " + payload.toString());
+    resource function post preUpdatePassword(
+        @http:Payload RequestBody payload,
+        @http:Header { name: "x-wso2-api-version" } string apiVersion,
+        @http:Header string authorization
+    ) returns OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse {
 
-        if (event.user.updatingCredential is UnencryptedCredential) {
-            UnencryptedCredential unencryptedCredential = <UnencryptedCredential>event.user.updatingCredential;
-            string password = unencryptedCredential.value;
-            return getResponse(password);
-        } else {
-            InternalServerErrorErrorResponse resp = { 
-                body: { 
-                    actionStatus: "ERROR", 
-                    errorMessage: "Unable to decrypt the credential", 
-                    errorDescription: "Please provide a unencrypted credential"
-                } 
-            };
-            log:printInfo("ERROR Response: " + resp.toString());
-            return resp;
+        OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse response = validateHeaders(apiVersion, authorization);
+        if (response is BadRequestErrorResponse || response is InternalServerErrorErrorResponse) {
+            log:printInfo("Response: " + response.toString());
+            return response;
         }
+        
+        log:printInfo("Pre Update Password Action request received: " + payload.toString());
+        
+        response = validatePassword(payload.event);
+        log:printInfo("Response: " + response.toString());
+        return response;
     }
 }
 
-function getResponse(string password) returns OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse {
+function validatePassword(Event event) returns OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse {
     
-    if (password == "myPassword@123") {
-        InternalServerErrorErrorResponse resp = { 
-            body: { 
-                actionStatus: "ERROR", 
-                errorMessage: "Internal server error", 
-                errorDescription: "Please try again"
-            } 
-        };
-        log:printInfo("ERROR Response: " + resp.toString());
-        return resp;
-    } else if (password == "myPassword@1234") {
-        OkInline_response_200 resp = { 
-            body: { 
-                actionStatus: "FAILED", 
-                failureReason: "Compromised password", 
-                failureDescription: "Provide a different password"
-            } 
-        };
-        log:printInfo("FAILED Response: " + resp.toString());
-        return resp;
-    } else {
-        OkInline_response_200 resp = { body: { actionStatus: "SUCCESS" } };
-        log:printInfo("SUCCESS Response: " + resp.toString());
-        return resp;
+    if (event.user.updatingCredential is UnencryptedCredential) {
+        UnencryptedCredential unencryptedCredential = <UnencryptedCredential>event.user.updatingCredential;
+        string password = unencryptedCredential.value;
+        
+        if (password == "myPassword@123") {
+            return buildInternalServerErrorErrorResponse("Internal server error", "Please try again");
+        } 
+        if (password == "myPassword@1234") {
+            return buildFailedResponse("Compromised password", "Provide a different password");
+        } 
+        
+        return buildSuccessResponse();
     }
+
+    return buildInternalServerErrorErrorResponse("Unable to decrypt the credential", "Please provide a unencrypted credential");
+}
+
+function validateHeaders(string apiVersion, string authorization) returns OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse {
+    
+    if (apiVersion != "v1") {
+        return buildInternalServerErrorErrorResponse("Invalid API version", 
+            "Provided API version: " + apiVersion + " is not equal to the current supported API version: v1");
+    }
+    if (authorization != "dGVzdC5lMmUucHJlLnVwZGF0ZS5wYXNzd29yZC5hY3Rpb24uYXV0aG9yaXphdGlvbi52YWx1ZQ==") {
+        return buildBadRequestErrorResponse("Unauthorized", 
+            "Invalid Credentials. Make sure you have provided the correct credentials for authentication");
+    }
+    
+    return buildSuccessResponse();
+}
+
+function buildSuccessResponse() returns OkInline_response_200 {
+
+    OkInline_response_200 response = { body: { actionStatus: "SUCCESS" } };
+    return response;
+}
+
+function buildFailedResponse(string failureReason, string failureDescription) returns OkInline_response_200 {
+
+    OkInline_response_200 response = { 
+        body: { 
+            actionStatus: "FAILED", 
+            failureReason: failureReason, 
+            failureDescription: failureDescription
+        } 
+    };
+    return response;
+}
+
+function buildBadRequestErrorResponse(string errorMessage, string errorDescription) returns BadRequestErrorResponse {
+
+    BadRequestErrorResponse response = { 
+        body: { 
+            actionStatus: "ERROR", 
+            errorMessage: errorMessage, 
+            errorDescription: errorDescription
+        } 
+    };
+    return response;
+}
+
+function buildInternalServerErrorErrorResponse(string errorMessage, string errorDescription) returns InternalServerErrorErrorResponse {
+
+    InternalServerErrorErrorResponse response = { 
+        body: { 
+            actionStatus: "ERROR", 
+            errorMessage: errorMessage, 
+            errorDescription: errorDescription
+        } 
+    };
+    return response;
 }

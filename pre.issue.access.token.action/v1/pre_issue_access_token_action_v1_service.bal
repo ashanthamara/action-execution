@@ -22,7 +22,7 @@ listener http:Listener ep0 = new (9090);
 service / on ep0 {
 
     public function init() {
-        log:printInfo("Pre Issue Access Token Action E2E Service started.");
+        log:printInfo("Pre issue access token action e2e service started.");
     }
 
     # handle pre-issue access token events
@@ -46,7 +46,7 @@ service / on ep0 {
             return response;
         }
 
-        log:printInfo("Request Received to Update Scopes of the access token");
+        log:printInfo("Request received to update scopes of the access token");
         log:printInfo(payload.toString());
 
         string grantType = payload.event.request.grantType;
@@ -106,7 +106,7 @@ service / on ep0 {
             return response;
         }
 
-        log:printInfo("Request Received to Update Scopes of the access token");
+        log:printInfo("Request received to update audience of the access token");
         log:printInfo(payload.toString());
         
         string grantType = payload.event.request.grantType;
@@ -161,7 +161,7 @@ service / on ep0 {
             return response;
         }
 
-        log:printInfo("Request Received to Update Scopes of the access token");
+        log:printInfo("Request received to update oidc claims of the access token");
         log:printInfo(payload.toString());
         
         string grantType = payload.event.request.grantType;
@@ -216,7 +216,7 @@ service / on ep0 {
             return response;
         }
 
-        log:printInfo("Request Received to Update Scopes of the access token");
+        log:printInfo("Request received to update expiry time of the access token");
         log:printInfo(payload.toString());
         
         string grantType = payload.event.request.grantType;
@@ -263,13 +263,13 @@ service / on ep0 {
             return response;
         }
 
-        log:printInfo("Request Received to Update Scopes of the access token");
+        log:printInfo("Request received to add custom claims the access token");
         log:printInfo(payload.toString());
         
         string grantType = payload.event.request.grantType;
         SuccessResponse respBody;
         if (grantType == "refresh_token") {
-            string? prevGrantType = getAccessTokenClaim(payload, "grantType");
+            (string|int|boolean|string[])? prevGrantType = getAccessTokenClaim(payload, "grantType");
             if prevGrantType != null {
                 respBody = {
                     "actionStatus": "SUCCESS",
@@ -358,6 +358,7 @@ service / on ep0 {
         }
 
         log:printInfo("Request Received to simulate an error");
+        log:printInfo(payload.toString());
 
         InternalServerErrorErrorResponse resp = {
             body: {
@@ -383,6 +384,7 @@ service / on ep0 {
         }
 
         log:printInfo("Request Received to simulate a failure");
+        log:printInfo(payload.toString());
 
         OkInline_response_200 resp = {
             body: {
@@ -397,12 +399,12 @@ service / on ep0 {
 }
 
 // Function to get the email value from the claims
-function getAccessTokenClaim(RequestBody requestPayload, string claimName) returns string? {
+function getAccessTokenClaim(RequestBody requestPayload, string claimName) returns (string|int|boolean|string[])? {
     
     AccessTokenClaims[] claims = requestPayload.event.accessToken.claims;
     foreach AccessTokenClaims claim in claims {
         if claim.name == claimName {
-            return claim.name;
+            return claim.value;
         }
     }
     return null;

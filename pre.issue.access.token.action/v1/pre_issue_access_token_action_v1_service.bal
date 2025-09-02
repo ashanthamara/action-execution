@@ -396,6 +396,83 @@ service / on ep0 {
         log:printInfo("Response: " + resp.toString());
         return resp; 
     }
+
+    resource function post testHeadersAndParams(
+        @http:Payload RequestBody payload,
+        @http:Header { name: "x-wso2-api-version" } string apiVersion,
+        @http:Header string authorization
+    ) returns OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse {
+        
+        OkInline_response_200|BadRequestErrorResponse|InternalServerErrorErrorResponse response = validateHeaders(apiVersion, authorization);
+        if (response is BadRequestErrorResponse || response is InternalServerErrorErrorResponse) {
+            log:printInfo("Response: " + response.toString());
+            return response;
+        }
+
+        log:printInfo("Request Received to test headers and params");
+        log:printInfo(payload.toString());
+
+        AddOperationResponse[] addOperations = [];
+        RequestHeaders[]? reqHeaders = payload.event?.request?.additionalHeaders;
+        if reqHeaders is RequestHeaders[] {
+            foreach var header in reqHeaders {
+                AddOperationResponse addHeader = {
+                    op: "add",
+                    path: "/accessToken/claims/-",
+                    value: {
+                        name: header.name,
+                        value: header.value
+                    }
+                };
+                addOperations.push(addHeader);
+            }
+        } else {
+            AddOperationResponse addHeader = {
+                op: "add",
+                path: "/accessToken/claims/-",
+                value: {
+                    name: "isHeadersAvailable",
+                    value: false
+                }
+            };
+            addOperations.push(addHeader);
+        }
+
+        RequestParams[]? reqParams = payload.event?.request?.additionalParams;
+        if reqParams is RequestParams[] {
+            foreach var param in reqParams {
+                AddOperationResponse addParam = {
+                    op: "add",
+                    path: "/accessToken/claims/-",
+                    value: {
+                        name: param.name,
+                        value: param.value
+                    }
+                };
+                addOperations.push(addParam);
+            }
+        } else {
+            AddOperationResponse addParam = {
+                op: "add",
+                path: "/accessToken/claims/-",
+                value: {
+                    name: "isParamsAvailable",
+                    value: false
+                }
+            };
+            addOperations.push(addParam);
+        }
+
+
+        OkInline_response_200 resp = {
+            "body": {
+                actionStatus: "SUCCESS",
+                operations: addOperations
+            }
+        };
+        log:printInfo("Response: " + resp.toString());
+        return resp; 
+    }
 }
 
 // Function to get the email value from the claims

@@ -125,7 +125,7 @@ public type Event record {
     # This indicates whether the password update was initiated by an admin, a user, or an application.
     "USER"|"ADMIN"|"APPLICATION" initiatorType;
     # This indicates whether the password update was initiated over a password reset flow, update flow, or an invite flow.
-    "RESET"|"UPDATE"|"INVITE" action;
+    "RESET"|"UPDATE"|"INVITE"|"REGISTER" action;
     # This property represents the tenant under which the token request is being processed.
     Tenant tenant;
     # Contains information about the user associated with the password update request.

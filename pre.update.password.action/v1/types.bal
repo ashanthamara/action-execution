@@ -45,7 +45,7 @@ public type SuccessResponse record {
 # Contains information about the user associated with the password update request.
 public type User record {
     # Defines the unique identifier of the user.
-    string id;
+    string id?;
     UnencryptedCredential|EncryptedCredential updatingCredential;
 };
 
